@@ -14,7 +14,7 @@ All cases were labeled through a rigorous two-stage consensus process by experie
 
 ## Access the Platform
 
-**Live interactive platform:** [https://pnavalbaudin.github.io/t1drl-training/](https://pnavalbaudin.github.io/t1drl-training/)
+**Live interactive platform:** [https://navalpablo.github.io/t1drl_trainer/](https://navalpablo.github.io/t1drl_trainer/)
 
 No installation required. Works on desktop and mobile devices.
 
@@ -55,28 +55,6 @@ If you use this training platform in your research or clinical work, please cite
 
 **Data descriptor paper:** *In preparation*
 
-## Acknowledgments
-
-This dataset was developed as part of the MSPredict project, funded by Fundación "la Caixa" (CaixaImpulse grant CI24-10486). 
-
-The training platform supports the MAGNIMS multi-center validation study of T1-dark rim lesions.
-
-Data collection and consensus labeling were approved by the Hospital Universitari de Bellvitge Research Ethics Committee.
-
-## Contributing
-
-### Reporting Issues
-Found a bug or incorrect label? Please [open an issue](https://github.com/pnavalbaudin/t1drl-training/issues).
-
-### Providing Feedback
-We welcome feedback on the training platform's usability and effectiveness. Contact: pablo.naval.idi@gencat.cat
-
-## Technical Details
-
-- **Framework:** Vanilla HTML5, CSS3, JavaScript (no dependencies)
-- **Storage:** Local browser storage (localStorage) for user analytics
-- **Privacy:** No server-side data collection
-- **Compatibility:** Modern browsers (Chrome, Firefox, Safari, Edge)
 
 ## Project Status
 
@@ -85,28 +63,3 @@ We welcome feedback on the training platform's usability and effectiveness. Cont
 - 🔄 Data descriptor manuscript in preparation
 - 🔄 Zenodo archival pending
 
-## Related Projects
-
-- [MSPredict](https://github.com/pnavalbaudin/MSPredict): Longitudinal MS biomarker study (parent cohort)
-- MAGNIMS T1-DRL validation study (ongoing)
-
-## Authors
-
-**Pablo Naval-Baudin** - Concept, dataset curation, platform development  
-Hospital Universitari de Bellvitge, Barcelona, Spain
-
-**Albert Pons-Escoda** - Expert consensus, methodology  
-Hospital Universitari de Bellvitge, Barcelona, Spain
-
-*Full author list in forthcoming publications*
-
-## Contact
-
-Pablo Naval-Baudin  
-Email: pablo.naval.idi@gencat.cat  
-Hospital Universitari de Bellvitge  
-Barcelona, Spain
-
----
-
-**Last updated:** January 2025
