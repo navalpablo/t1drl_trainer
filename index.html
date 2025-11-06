@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>T1-Dark Rim Training Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/viewer.js"></script>
+  <style>
+    /* Index-only layout sugar (compatible with your base style.css) */
+    .batch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.75rem;
+      margin: 0.75rem 0 1.5rem;
+    }
+    .batch-grid a {
+      display: block;
+      padding: 0.85rem 1rem;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .06s ease, box-shadow .06s ease, border-color .12s ease;
+    }
+    .batch-grid a:hover {
+      transform: translateY(-1px);
+      border-color: var(--brand);
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    .section-note { color:#6b7280; font-size:.95rem; margin:.25rem 0 .5rem; }
+    .muted { color:#6b7280; }
+
+    /* Analytics summary card */
+    .analytics-card {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,.04);
+    }
+    .analytics-metrics {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+      gap:.75rem;
+      margin:.5rem 0 .25rem;
+    }
+    .metric {
+      padding:.5rem .75rem;
+      border:1px dashed #e5e7eb;
+      border-radius:.6rem;
+      background:#fafafa;
+    }
+    .metric .label { font-size:.85rem; color:#6b7280; }
+    .metric .value { font-size:1.15rem; font-weight:700; margin-top:.1rem; }
+    .attempts-list { margin-top:.5rem; font-size:.95rem; color:#374151; }
+    .attempts-list li { margin:.15rem 0; }
+  </style>
+</head>
+<body>
+  <!-- Hide floating back button on index -->
+  <a class="back-to-menu-button" style="display:none" aria-hidden="true"></a>
+
+  <main class="container">
+
+    <h1>T1-Dark Rim Lesion Training</h1>
+
+    <p>
+      This portal is intended to help imaging experts recognise the
+      <strong>T1-dark rim lesion (T1-DRL)</strong>, a novel sign of smouldering
+      inflammation in multiple sclerosis
+      (<a href="https://doi.org/10.1016/j.ejrad.2024.111358" target="_blank" rel="noopener">
+        Naval-Baudin et al., European Journal of Radiology, 2024
+      </a>).
+    </p>
+
+    <p>
+      The portal consists of <strong>5 guided training batches</strong> and
+      <strong>15 self-evaluation batches</strong>. Each batch contains up to
+      20 T1-DRL candidates that have been read multiple times by observers with
+      different levels of experience. All candidates were initially tagged as
+      possible T1-DRLs by at least one reader, and a final expert consensus,
+      using the published criteria, determined whether each candidate represents
+      a true T1-DRL.
+    </p>
+
+    <p>
+      In the original study, T1-DRLs were defined by the following criteria:
+    </p>
+    <ol>
+      <li>A hypointense rim continuous through at least two thirds of the edge of the white-matter part of the lesion.</li>
+      <li>The rim corresponds to the edge, or at least part of the edge, of the T2-hyperintense lesion core.</li>
+      <li>The lesion core is T2-hyperintense and does not enhance on post-contrast imaging.</li>
+      <li>The rim (or part of it) is visible on at least two consecutive slices (for 2D imaging) or two orthogonal planes (for 3D imaging).</li>
+    </ol>
+
+    <p>
+      As a limitation, full application of these criteria would ideally
+      include access to T2-FLAIR and multiplanar 3D reconstructions. Here we
+      approximate the criteria based on the available imaging only, so please
+      interpret the “gold standard” labels in that context.
+    </p>
+
+    <p>
+      Lesion segmentations are shown to help you locate the lesion of interest
+      when other lesions appear in the cropped field of view. These masks are
+      <strong>not</strong> intended as precise boundaries: their margins can be
+      imperfect and should be treated purely as location guides, not exact
+      segmentations.
+    </p>
+	
+	<p>
+	  <strong>License and Citation.</strong> This dataset is freely available under a 
+	  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">
+	  CC BY 4.0 license</a>. You may use, adapt, and share this resource for any purpose, 
+	  including commercial use, provided you give appropriate credit.
+	</p>
+
+	<p>
+	  <strong>How to cite:</strong> CITATION PENDING
+	</p>
+
+
+	<p>
+	  Website created by <strong>Pablo Naval-Baudin</strong>. For questions, feedback, or to report 
+	  issues, please open an issue on our github repository  <a href="https://github.com/navalpablo/t1drl_trainer" target="_blank" rel="noopener">
+	  GitHub repository</a>.
+	</p>	
+	
+    <!-- Guided batches -->
+    <h2>Guided training (answers shown)</h2>
+    <p class="section-note">Start here. Each lesion is labelled <em>True</em> or <em>False</em>.</p>
+
+    <div class="batch-grid" aria-label="Guided training batches">
+      <a href="train_1.html">Training batch 1</a>
+      <a href="train_2.html">Training batch 2</a>
+      <a href="train_3.html">Training batch 3</a>
+      <a href="train_4.html">Training batch 4</a>
+      <a href="train_5.html">Training batch 5</a>
+    </div>
+
+    <!-- Self-eval -->
+    <h2>Self-evaluation</h2>
+    <p class="section-note">
+      Test yourself. Mark every lesion, click <strong>Submit batch</strong>, and review your score.
+      Your progress is saved locally.
+    </p>
+
+    <div class="batch-grid" aria-label="Self-evaluation batches">
+      <!-- Exact mapping: label matches file number; omit eval_2.html (mock) -->
+      <a href="eval_6.html">Self-eval batch 6</a>
+      <a href="eval_7.html">Self-eval batch 7</a>
+      <a href="eval_8.html">Self-eval batch 8</a>
+      <a href="eval_9.html">Self-eval batch 9</a>
+      <a href="eval_10.html">Self-eval batch 10</a>
+      <a href="eval_11.html">Self-eval batch 11</a>
+      <a href="eval_12.html">Self-eval batch 12</a>
+      <a href="eval_13.html">Self-eval batch 13</a>
+      <a href="eval_14.html">Self-eval batch 14</a>
+      <a href="eval_15.html">Self-eval batch 15</a>
+      <a href="eval_16.html">Self-eval batch 16</a>
+      <a href="eval_17.html">Self-eval batch 17</a>
+      <a href="eval_18.html">Self-eval batch 18</a>
+      <a href="eval_19.html">Self-eval batch 19</a>
+      <a href="eval_20.html">Self-eval batch 20</a>
+    </div>
+
+    <hr>
+
+    <!-- Analytics summary ONLY at the bottom -->
+    <h2>📈 Your analytics summary</h2>
+    <div id="analyticsSummary" class="analytics-card">
+      <p class="muted">No attempts found yet. Complete a self-evaluation and submit your answers to see your stats here.</p>
+    </div>
+    <div style="margin-top:.75rem">
+      <button id="clearAnalyticsIndex"
+              type="button"
+              style="background:var(--danger);color:#fff;border:none;border-radius:.5rem;padding:.5rem .9rem;font-size:.95rem;cursor:pointer">
+        Clear All Analytics Data
+      </button>
+      <span class="muted" style="margin-left:.5rem;font-size:.9rem">This only clears local data on this device.</span>
+    </div>
+
+  </main>
+
+  <!-- Inline script to render/clear analytics -->
+  <script>
+    (function renderIndexAnalytics() {
+      const mount = document.getElementById('analyticsSummary');
+      const clearBtn = document.getElementById('clearAnalyticsIndex');
+
+      function aggregate() {
+        const raw = JSON.parse(localStorage.getItem('lesionAnalytics') || '{}');
+        const rows = [];
+        Object.keys(raw).forEach(batch => {
+          (raw[batch] || []).forEach(r => rows.push({ batch, ...r }));
+        });
+        return rows;
+      }
+
+      function render() {
+        const rows = aggregate();
+        if (!rows.length) {
+          mount.innerHTML = '<p class="muted">No attempts found yet. Complete a self-evaluation and submit your answers to see your stats here.</p>';
+          return;
+        }
+
+        rows.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+        const attempts = rows.length;
+        const batches = new Set(rows.map(r => r.batch)).size;
+        const meanAcc = (rows.reduce((s,r)=> s + (+r.accuracy || 0), 0) / attempts).toFixed(1);
+        const best = rows.reduce((m,r) => (+r.accuracy > m ? +r.accuracy : m), -Infinity);
+        const bestAcc = best < 0 ? '–' : best.toFixed(1);
+        const recent = rows.slice(0, 7).map(r => {
+          const d = r.date ? new Date(r.date) : null;
+          const dStr = d ? d.toLocaleDateString() : '–';
+          const acc = (r.accuracy ?? '–');
+          return `${dStr}: ${acc}% — ${r.batch}`;
+        });
+
+        mount.innerHTML = `
+          <div class="analytics-metrics">
+            <div class="metric">
+              <div class="label">Total attempts</div>
+              <div class="value">${attempts}</div>
+            </div>
+            <div class="metric">
+              <div class="label">Batches attempted</div>
+              <div class="value">${batches}</div>
+            </div>
+            <div class="metric">
+              <div class="label">Mean accuracy</div>
+              <div class="value">${meanAcc}%</div>
+            </div>
+            <div class="metric">
+              <div class="label">Best accuracy</div>
+              <div class="value">${bestAcc}%</div>
+            </div>
+          </div>
+          <details style="margin-top:.5rem">
+            <summary>Recent attempts</summary>
+            <ul class="attempts-list">
+              ${recent.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </details>
+          <p class="small muted" style="margin-top:.5rem">
+            Tip: Open any evaluation batch, submit your answers, then use the "⌨️ Shortcuts" button to export analytics or clear data.
+          </p>
+        `;
+      }
+
+      clearBtn.addEventListener('click', () => {
+        if (confirm('Clear all analytics from this device? This cannot be undone.')) {
+          localStorage.removeItem('lesionAnalytics');
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
