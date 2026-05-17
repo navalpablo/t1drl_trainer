@@ -8,55 +8,140 @@
   <script defer src="js/viewer.js"></script>
   <style>
     /* Index-only layout sugar (compatible with your base style.css) */
+    .lead {
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      max-width: 70ch;
+    }
+    .meta-row {
+      display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;
+      margin:.25rem 0 1rem;
+    }
+    .chip {
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.25rem .65rem;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:9999px;
+      font-size:.82rem; color:var(--text-soft);
+      box-shadow: var(--shadow-sm);
+    }
+    .chip strong { color: var(--text); font-weight:600 }
+
+    .info-card {
+      background:#fff;
+      border:1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      box-shadow: var(--shadow-sm);
+      margin: 1rem 0;
+    }
+    .info-card p { margin:.4rem 0 }
+    .info-card ol { margin:.4rem 0 .4rem 1.2rem; padding:0; }
+    .info-card ol li { margin:.25rem 0; color:var(--text-soft) }
+
     .batch-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 0.75rem;
-      margin: 0.75rem 0 1.5rem;
+      margin: 0.75rem 0 1.75rem;
     }
     .batch-grid a {
-      display: block;
-      padding: 0.85rem 1rem;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 0.75rem;
+      position:relative;
+      display: flex;
+      align-items: center;
+      gap:.6rem;
+      padding: 0.9rem 1rem;
+      background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       text-decoration: none;
-      color: inherit;
-      transition: transform .06s ease, box-shadow .06s ease, border-color .12s ease;
+      color: var(--text);
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .batch-grid a::before{
+      content:"";
+      width:8px; height:8px; border-radius:50%;
+      background:var(--brand);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+      flex-shrink:0;
+    }
+    .batch-grid[aria-label*="evaluation"] a::before{
+      background:#06b6d4;
+      box-shadow:0 0 0 3px rgba(6,182,212,.15);
     }
     .batch-grid a:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
       border-color: var(--brand);
-      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      box-shadow: 0 10px 24px rgba(15,23,42,.08);
+      text-decoration:none;
+      color:var(--text);
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
     }
-    .section-note { color:#6b7280; font-size:.95rem; margin:.25rem 0 .5rem; }
-    .muted { color:#6b7280; }
+    .section-note { color:var(--muted); font-size:.95rem; margin:.25rem 0 .5rem; }
+    .muted { color:var(--muted); }
 
     /* Analytics summary card */
     .analytics-card {
       margin-top: 1rem;
-      padding: 1rem 1.25rem;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 0.75rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,.04);
+      padding: 1.25rem 1.4rem;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .analytics-card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:3px;
+      background:linear-gradient(90deg, var(--brand), #06b6d4, var(--true));
     }
     .analytics-metrics {
       display:grid;
       grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
       gap:.75rem;
-      margin:.5rem 0 .25rem;
+      margin:.25rem 0 .25rem;
     }
     .metric {
-      padding:.5rem .75rem;
-      border:1px dashed #e5e7eb;
-      border-radius:.6rem;
-      background:#fafafa;
+      padding:.75rem .9rem;
+      border:1px solid var(--border-soft);
+      border-radius:.7rem;
+      background:#fff;
+      box-shadow: var(--shadow-sm);
+      transition: transform .12s ease, box-shadow .15s ease;
     }
-    .metric .label { font-size:.85rem; color:#6b7280; }
-    .metric .value { font-size:1.15rem; font-weight:700; margin-top:.1rem; }
-    .attempts-list { margin-top:.5rem; font-size:.95rem; color:#374151; }
-    .attempts-list li { margin:.15rem 0; }
+    .metric:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(15,23,42,.06); }
+    .metric .label {
+      font-size:.72rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      font-weight:600;
+    }
+    .metric .value {
+      font-size:1.4rem;
+      font-weight:700;
+      margin-top:.15rem;
+      color:var(--text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing:-.01em;
+    }
+    .attempts-list { margin-top:.5rem; font-size:.92rem; color:var(--text-soft); padding-left:1.1rem }
+    .attempts-list li { margin:.2rem 0; font-variant-numeric: tabular-nums }
+    details > summary {
+      cursor:pointer;
+      color: var(--brand);
+      font-weight:500;
+      font-size:.92rem;
+      padding:.25rem 0;
+      user-select:none;
+    }
+    details > summary:hover { color: var(--brand-dark); }
   </style>
 </head>
 <body>
@@ -67,7 +152,7 @@
 
     <h1>T1-Dark Rim Lesion Training</h1>
 
-    <p>
+    <p class="lead">
       This portal is intended to help imaging experts recognise the
       <strong>T1-dark rim lesion (T1-DRL)</strong>, a novel sign of smouldering
       inflammation in multiple sclerosis
@@ -76,25 +161,29 @@
       </a>).
     </p>
 
-    <p>
-      The portal consists of <strong>5 guided training batches</strong> and
-      <strong>15 self-evaluation batches</strong>. Each batch contains up to
-      20 T1-DRL candidates that have been read multiple times by observers with
-      different levels of experience. All candidates were initially tagged as
-      possible T1-DRLs by at least one reader, and a final expert consensus,
-      using the published criteria, determined whether each candidate represents
-      a true T1-DRL.
-    </p>
+    <div class="meta-row">
+      <span class="chip"><strong>5</strong>&nbsp;guided batches</span>
+      <span class="chip"><strong>15</strong>&nbsp;self-eval batches</span>
+      <span class="chip">Up to <strong>20</strong> candidates per batch</span>
+    </div>
 
     <p>
-      In the original study, T1-DRLs were defined by the following criteria:
+      Each batch contains up to 20 T1-DRL candidates that have been read multiple
+      times by observers with different levels of experience. All candidates
+      were initially tagged as possible T1-DRLs by at least one reader, and a
+      final expert consensus, using the published criteria, determined whether
+      each candidate represents a true T1-DRL.
     </p>
-    <ol>
-      <li>A hypointense rim continuous through at least two thirds of the edge of the white-matter part of the lesion.</li>
-      <li>The rim corresponds to the edge, or at least part of the edge, of the T2-hyperintense lesion core.</li>
-      <li>The lesion core is T2-hyperintense and does not enhance on post-contrast imaging.</li>
-      <li>The rim (or part of it) is visible on at least two consecutive slices (for 2D imaging) or two orthogonal planes (for 3D imaging).</li>
-    </ol>
+
+    <div class="info-card">
+      <p style="margin-top:0"><strong>T1-DRL criteria</strong> (Naval-Baudin et al., 2024):</p>
+      <ol>
+        <li>A hypointense rim continuous through at least two thirds of the edge of the white-matter part of the lesion.</li>
+        <li>The rim corresponds to the edge, or at least part of the edge, of the T2-hyperintense lesion core.</li>
+        <li>The lesion core is T2-hyperintense and does not enhance on post-contrast imaging.</li>
+        <li>The rim (or part of it) is visible on at least two consecutive slices (for 2D imaging) or two orthogonal planes (for 3D imaging).</li>
+      </ol>
+    </div>
 
     <p>
       As a limitation, full application of these criteria would ideally
@@ -177,17 +266,15 @@
     <hr>
 
     <!-- Analytics summary ONLY at the bottom -->
-    <h2>📈 Your analytics summary</h2>
+    <h2>Your analytics summary</h2>
     <div id="analyticsSummary" class="analytics-card">
-      <p class="muted">No attempts found yet. Complete a self-evaluation and submit your answers to see your stats here.</p>
+      <p class="muted" style="margin:0">No attempts found yet. Complete a self-evaluation and submit your answers to see your stats here.</p>
     </div>
-    <div style="margin-top:.75rem">
-      <button id="clearAnalyticsIndex"
-              type="button"
-              style="background:var(--danger);color:#fff;border:none;border-radius:.5rem;padding:.5rem .9rem;font-size:.95rem;cursor:pointer">
-        Clear All Analytics Data
+    <div style="margin-top:1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+      <button id="clearAnalyticsIndex" type="button" class="danger">
+        Clear all analytics data
       </button>
-      <span class="muted" style="margin-left:.5rem;font-size:.9rem">This only clears local data on this device.</span>
+      <span class="muted" style="font-size:.88rem">This only clears local data on this device.</span>
     </div>
 
   </main>
