@@ -429,6 +429,19 @@ button.danger:hover{background:var(--danger-dark)}
 .analytics-history .right{color:var(--true)}
 .analytics-history .wrong{color:var(--false)}
 
+.collector-status{
+  margin:.75rem 0 0;
+  padding:.45rem .7rem;
+  font-size:.9rem;
+  color:var(--muted);
+  background:#f8fafc;
+  border:1px solid var(--border-soft);
+  border-radius:.5rem;
+}
+.collector-status.ok  { color:var(--true); background:#ecfdf5; border-color:#a7f3d0 }
+.collector-status.fail{ color:var(--warn); background:#fffbeb; border-color:#fde68a }
+.collector-status a   { color:inherit; text-decoration:underline }
+
 /* ==========================================================================
    Index analytics summary
    ========================================================================== */

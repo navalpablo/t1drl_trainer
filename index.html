@@ -142,6 +142,50 @@
       user-select:none;
     }
     details > summary:hover { color: var(--brand-dark); }
+
+    /* Research participation card */
+    #researchCard p { margin:.45rem 0 }
+    .toggle-row {
+      display:inline-flex; align-items:center; gap:.55rem;
+      padding:.5rem .7rem;
+      background:#f8fafc;
+      border:1px solid var(--border-soft);
+      border-radius:.6rem;
+      cursor:pointer;
+      user-select:none;
+      margin:.5rem 0 .25rem;
+    }
+    .toggle-row input { accent-color: var(--brand); width:1.05em; height:1.05em }
+    .toggle-row strong { font-weight:600 }
+    .field-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:.6rem .75rem;
+      margin:.6rem 0 .4rem;
+    }
+    .field-grid label {
+      display:flex; flex-direction:column; gap:.2rem;
+      font-size:.85rem; color:var(--muted); font-weight:600;
+      text-transform:uppercase; letter-spacing:.04em;
+    }
+    .field-grid input, .field-grid select {
+      font:inherit; color:var(--text);
+      padding:.5rem .65rem;
+      border:1px solid var(--border);
+      border-radius:.5rem;
+      background:#fff;
+      text-transform:none; letter-spacing:0;
+      transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    .field-grid input:focus, .field-grid select:focus {
+      outline:none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+    }
+    .save-row {
+      display:flex; align-items:center; gap:.6rem; flex-wrap:wrap;
+      margin-top:.4rem;
+    }
   </style>
 </head>
 <body>
@@ -265,6 +309,60 @@
 
     <hr>
 
+    <!-- Research participation -->
+    <h2 id="research">Research participation</h2>
+    <div class="info-card" id="researchCard">
+      <p style="margin-top:0">
+        Help us understand how trainees recognise T1-DRLs. If you opt in,
+        each scored batch is sent to a research server at
+        <strong>api.navalbaudin.com</strong> when you click
+        <strong>Submit batch</strong>. What's transmitted: an anonymous
+        browser ID, the batch name, your per-lesion answers, plus any
+        optional fields below. You can opt out at any time, and clearing
+        local data will stop future submissions.
+      </p>
+
+      <label class="toggle-row" for="researchOptIn">
+        <input type="checkbox" id="researchOptIn">
+        <span><strong>Share my results</strong> with the research team</span>
+      </label>
+
+      <div id="researchFields" hidden>
+        <div class="field-grid">
+          <label>Name
+            <input type="text" id="researchName" autocomplete="name" placeholder="Optional">
+          </label>
+          <label>Email
+            <input type="email" id="researchEmail" autocomplete="email" placeholder="Optional">
+          </label>
+          <label>Center / institution
+            <input type="text" id="researchCenter" autocomplete="organization" placeholder="Optional">
+          </label>
+          <label>Role
+            <select id="researchRole">
+              <option value="">— Select (optional) —</option>
+              <option>Medical student</option>
+              <option>Resident</option>
+              <option>Fellow</option>
+              <option>Neuroradiologist</option>
+              <option>Radiologist</option>
+              <option>Neurologist</option>
+              <option>Researcher</option>
+              <option>Other</option>
+            </select>
+          </label>
+        </div>
+        <p class="small muted">
+          All fields are optional and only used to interpret submissions.
+          To delete previously submitted data, contact the maintainer.
+        </p>
+        <div class="save-row">
+          <button id="researchSave" type="button">Save preferences</button>
+          <span id="researchSaveStatus" class="small muted"></span>
+        </div>
+      </div>
+    </div>
+
     <!-- Analytics summary ONLY at the bottom -->
     <h2>Your analytics summary</h2>
     <div id="analyticsSummary" class="analytics-card">
@@ -354,6 +452,52 @@
       });
 
       render();
+    })();
+
+    // Research-participation card wiring
+    (function researchCard() {
+      const optIn   = document.getElementById('researchOptIn');
+      const fields  = document.getElementById('researchFields');
+      const nameI   = document.getElementById('researchName');
+      const emailI  = document.getElementById('researchEmail');
+      const centerI = document.getElementById('researchCenter');
+      const roleI   = document.getElementById('researchRole');
+      const saveBtn = document.getElementById('researchSave');
+      const status  = document.getElementById('researchSaveStatus');
+
+      function load() {
+        try { return JSON.parse(localStorage.getItem('lesionResearch') || '{}'); }
+        catch { return {}; }
+      }
+
+      const cur = load();
+      optIn.checked = !!cur.optIn;
+      fields.hidden = !cur.optIn;
+      nameI.value   = cur.name   || '';
+      emailI.value  = cur.email  || '';
+      centerI.value = cur.center || '';
+      roleI.value   = cur.role   || '';
+
+      optIn.addEventListener('change', () => {
+        fields.hidden = !optIn.checked;
+        const next = { ...load(), optIn: optIn.checked };
+        localStorage.setItem('lesionResearch', JSON.stringify(next));
+        status.textContent = optIn.checked ? 'Sharing enabled.' : 'Sharing disabled.';
+        setTimeout(() => { status.textContent = ''; }, 2500);
+      });
+
+      saveBtn.addEventListener('click', () => {
+        const next = {
+          optIn: optIn.checked,
+          name:   nameI.value.trim()   || null,
+          email:  emailI.value.trim()  || null,
+          center: centerI.value.trim() || null,
+          role:   roleI.value.trim()   || null,
+        };
+        localStorage.setItem('lesionResearch', JSON.stringify(next));
+        status.textContent = 'Saved.';
+        setTimeout(() => { status.textContent = ''; }, 2000);
+      });
     })();
   </script>
 </body>

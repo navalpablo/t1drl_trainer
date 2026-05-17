@@ -7,9 +7,61 @@
  * - Autosave/restore answers (progress)
  * - Prev/Next batch navigation (with warning)
  * - Back-to-menu & keyboard-help modal
+ * - Optional submission to research collector (api.navalbaudin.com/t1drl)
  */
 
+const COLLECTOR_URL = 'https://api.navalbaudin.com/t1drl/submit';
+
+function getAnonId() {
+  let id = localStorage.getItem('lesionAnonId');
+  if (!id) {
+    id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'a-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('lesionAnonId', id);
+  }
+  return id;
+}
+
+function getResearchProfile() {
+  try { return JSON.parse(localStorage.getItem('lesionResearch') || '{}'); }
+  catch { return {}; }
+}
+
+async function sendSubmission(payload) {
+  try {
+    const res = await fetch(COLLECTOR_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function queueSubmission(payload) {
+  const q = JSON.parse(localStorage.getItem('lesionPendingSubmissions') || '[]');
+  q.push(payload);
+  localStorage.setItem('lesionPendingSubmissions', JSON.stringify(q));
+}
+
+async function flushQueue() {
+  const q = JSON.parse(localStorage.getItem('lesionPendingSubmissions') || '[]');
+  if (!q.length) return;
+  const remaining = [];
+  for (const p of q) {
+    const ok = await sendSubmission(p);
+    if (!ok) remaining.push(p);
+  }
+  localStorage.setItem('lesionPendingSubmissions', JSON.stringify(remaining));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Try to flush any queued submissions whenever a page loads
+  if (getResearchProfile().optIn) flushQueue();
   const containers = document.querySelectorAll(".lesion-container");
   let currentFocusedContainer = null;
 
@@ -279,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const boxes = document.querySelectorAll('.lesion-container');
       let tp = 0, tn = 0, fp = 0, fn = 0;
+      const perLesion = [];
 
       boxes.forEach(c => {
         const gold = c.dataset.gold === 'True';
@@ -295,6 +348,13 @@ document.addEventListener("DOMContentLoaded", () => {
         else { fn++; wrong = true; if (mark){ mark.textContent = '❌'; mark.className = 'result wrong'; } }
 
         if (wrong) addShowAnswerButton(c, gold);
+
+        perLesion.push({
+          lesion_id: ans.name,
+          gold: gold ? 'True' : 'False',
+          given: given ? 'True' : 'False',
+          correct: gold === given,
+        });
       });
 
       const tot = tp + tn + fp + fn;
@@ -318,6 +378,50 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       displayAnalyticsHistory(batchName);
+
+      // Optional submission to research collector
+      const profile = getResearchProfile();
+      if (card) {
+        const oldStatus = card.querySelector('.collector-status');
+        if (oldStatus) oldStatus.remove();
+      }
+      if (profile.optIn && card && perLesion.length) {
+        const status = document.createElement('p');
+        status.className = 'collector-status';
+        status.textContent = 'Sending to research server…';
+        card.appendChild(status);
+
+        const payload = {
+          anon_id: getAnonId(),
+          batch_name: batchName,
+          name:   profile.name   || null,
+          email:  profile.email  || null,
+          center: profile.center || null,
+          role:   profile.role   || null,
+          tp, tn, fp, fn,
+          accuracy: parseFloat(acc),
+          sensitivity: sens === '–' ? null : parseFloat(sens),
+          specificity: spec === '–' ? null : parseFloat(spec),
+          answers: perLesion,
+        };
+
+        sendSubmission(payload).then(ok => {
+          if (ok) {
+            status.textContent = '✓ Submitted to research server';
+            status.classList.add('ok');
+          } else {
+            queueSubmission(payload);
+            status.textContent = '⚠ Couldn’t reach research server — will retry automatically';
+            status.classList.add('fail');
+          }
+        });
+      } else if (card && perLesion.length) {
+        const note = document.createElement('p');
+        note.className = 'collector-status muted';
+        note.innerHTML = 'Research sharing is off. <a href="index.html#research">Opt in on the main page</a> to contribute your answers.';
+        card.appendChild(note);
+      }
+
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
   }
@@ -435,11 +539,17 @@ document.addEventListener("DOMContentLoaded", () => {
           <li>You can clear your stored analytics at any time</li>
         </ul>
 
+        <h3 style="margin-top:1.25rem;">🔬 Research participation</h3>
+        <p style="font-size:0.9rem;margin-bottom:0.5rem;">
+          <span id="researchStateLabel">…</span>
+          &nbsp;<a href="index.html#research">Edit on the main page</a>
+        </p>
+
         <h3 style="margin-top:1.25rem;">🗑️ Data Control</h3>
         <p style="font-size:0.9rem;margin-bottom:0.5rem;">
           Clear all stored analytics and saved answers from this device.
         </p>
-        <button id="clearAnalytics" class="danger" style="background:var(--danger);padding:0.5rem 1rem;font-size:0.9rem;border-radius:.5rem;">
+        <button id="clearAnalytics" class="danger" style="padding:0.5rem 1rem;font-size:0.9rem;border-radius:.5rem;">
           Clear All Local Data
         </button>
       </div>
@@ -449,16 +559,25 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(modal);
 
     // Open / close modal
-    helpButton.addEventListener('click', () => modal.classList.add('show'));
+    helpButton.addEventListener('click', () => {
+      const label = modal.querySelector('#researchStateLabel');
+      if (label) {
+        const p = getResearchProfile();
+        label.textContent = p.optIn
+          ? `Sharing is ON${p.name ? ` (${p.name})` : ''}.`
+          : 'Sharing is OFF — your data stays on this device.';
+      }
+      modal.classList.add('show');
+    });
     modal.querySelector('.close-modal').addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) modal.classList.remove('show'); });
 
     // Clear all local data
     modal.querySelector('#clearAnalytics').addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear ALL analytics and saved answers? This cannot be undone.')) {
-        localStorage.removeItem('lesionAnalytics');
-        localStorage.removeItem('lesionProgress');
+      if (confirm('Clear ALL local data on this device (analytics, saved answers, research profile, anonymous ID, pending submissions)? Already-submitted data on the research server is not affected.')) {
+        ['lesionAnalytics','lesionProgress','lesionResearch','lesionAnonId','lesionPendingSubmissions']
+          .forEach(k => localStorage.removeItem(k));
         alert('Local data cleared.');
         modal.classList.remove('show');
       }
