@@ -1,0 +1,35 @@
+# Example ingress rules for Cloudflare Tunnel.
+#
+# Your existing config lives at /etc/cloudflared/config.yml (when
+# installed via `cloudflared service install`). Open that file and
+# ADD the t1drl entry to the existing `ingress:` list, ABOVE the
+# final `service: http_status:404` catch-all. Keep every other rule
+# (IAictus, etc.) untouched.
+#
+# `path:` is a regex match. The rule below catches /t1drl and any
+# subpath, so the public endpoints become:
+#   https://api.navalbaudin.com/t1drl/health
+#   https://api.navalbaudin.com/t1drl/submit
+#   https://api.navalbaudin.com/t1drl/stats        (admin token)
+#   https://api.navalbaudin.com/t1drl/export.csv   (admin token)
+#
+# After editing the config:
+#   sudo cloudflared tunnel route dns <your-tunnel-name> api.navalbaudin.com   # only the first time
+#   sudo systemctl restart cloudflared
+#   curl https://api.navalbaudin.com/t1drl/health
+
+tunnel: <your-tunnel-uuid-or-name>            # leave your existing value
+credentials-file: /etc/cloudflared/<uuid>.json # leave your existing value
+
+ingress:
+  # --- T1-DRL collector (path-scoped on the api host) ---
+  - hostname: api.navalbaudin.com
+    path: ^/t1drl(/.*)?$
+    service: http://127.0.0.1:8181
+
+  # --- your existing rules go here, unchanged ---
+  # - hostname: iaictus.navalbaudin.com
+  #   service: http://127.0.0.1:<existing-port>
+
+  # Required final catch-all (keep last)
+  - service: http_status:404
